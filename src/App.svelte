@@ -1,0 +1,41 @@
+<script>
+	import Welcome from "./Welcome.svelte";
+	import MainScreen from "./MainScreen.svelte";
+	const Store = require("electron-store");
+	import P2P from "./p2p";
+	import ChatManager from "./ChatManager";
+
+	const store = new Store();
+
+	let p2p;
+	async function main() {
+		p2p = P2P;
+		await p2p.init();
+	}
+	main();
+	let cm = ChatManager(p2p);
+	p2p.ChatManager = cm;
+</script>
+
+<style>
+	main {
+		display: flex;
+		flex: 1;
+		align-items: stretch;
+	}
+
+	h1 {
+		color: #ff3e00;
+		text-transform: uppercase;
+		font-size: 4em;
+		font-weight: 100;
+	}
+</style>
+
+<main>
+	{#if !store.get('name')}
+		<Welcome />
+	{:else}
+		<MainScreen {p2p} {cm} />
+	{/if}
+</main>
