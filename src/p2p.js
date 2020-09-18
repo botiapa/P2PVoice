@@ -95,7 +95,7 @@ export default {
 	connect: async function (address) {
 		if (this.node) {
 			let peerId = await PeerId.createFromB58String(address);
-			const { stream, protocol } = await this.node.dialProtocol(address, "/chat/1.0.0");
+			const { stream, protocol } = await this.node.dialProtocol(peerId, "/chat/1.0.0");
 			this.ChatManager.newConnection(ma.getPeerId(), stream, protocol);
 			console.log(`Chat connected to: ${ma.getPeerId()}`);
 		} else {
