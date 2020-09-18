@@ -19,7 +19,7 @@
 			peers = peers;
 		});
 		p2p.node.peerStore.on("change:protocols", ({ peerId, protocols }) => {
-			console.log(`Protocol change for peer: ${peerId} with the following protocols: ${mas}`);
+			console.log(`Protocol change for peer: ${peerId} with the following protocols: ${protocols}`);
 			if (!peers[peerId]) peers[peerId] = { peerId: peerId };
 			peers[peerId].protocols = protocols;
 			peers = peers;

@@ -1,11 +1,20 @@
 const Libp2p = require("libp2p");
 const TCP = require("libp2p-tcp");
+const WebSockets = require("libp2p-websockets");
 const SECIO = require("libp2p-secio");
 const MPLEX = require("libp2p-mplex");
 const KadDHT = require("libp2p-kad-dht");
 const LevelStore = require("datastore-level");
 const multiaddr = require("multiaddr");
 const MulticastDNS = require("libp2p-mdns");
+const Bootstrap = require("libp2p-bootstrap");
+const PeerId = require("peer-id");
+
+// Known peers addresses
+const bootstrapMultiaddrs = [
+	"/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd",
+	"/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3",
+];
 
 export default {
 	node: null,
@@ -23,10 +32,10 @@ export default {
 				listen: ["/ip4/0.0.0.0/tcp/0"],
 			},
 			modules: {
-				transport: [TCP],
+				transport: [TCP, WebSockets],
 				connEncryption: [SECIO],
 				streamMuxer: [MPLEX],
-				peerDiscovery: [MulticastDNS],
+				peerDiscovery: [MulticastDNS, Bootstrap],
 				peerRouting: [KadDHT],
 				dht: KadDHT,
 			},
@@ -38,14 +47,20 @@ export default {
 			config: {
 				dht: {
 					enabled: true,
+					randomWalk: {
+						enabled: true, // Allows to disable discovery (enabled by default)
+						interval: 300e3,
+						timeout: 10e3,
+					},
 				},
 				peerDiscovery: {
 					autoDial: true,
 					[MulticastDNS.tag]: {
 						enabled: true,
 					},
-					bootstrap: {
+					[Bootstrap.tag]: {
 						enabled: true,
+						list: bootstrapMultiaddrs, // provide array of multiaddrs
 					},
 				},
 			},
@@ -60,7 +75,7 @@ export default {
 		this.node.connectionManager.on("peer:disconnected", (connection) => {
 			console.log("disconnected from: ", connection.remotePeer.toB58String());
 		});
-		this.node.on("peer:discovery", (peer) => {
+		this.node.on("peer:discovery", async (peer) => {
 			console.log("discovered peer: ", peer);
 		});
 
@@ -79,8 +94,8 @@ export default {
 	},
 	connect: async function (address) {
 		if (this.node) {
-			const ma = multiaddr(address);
-			const { stream, protocol } = await this.node.dialProtocol(ma, "/chat/1.0.0");
+			let peerId = await PeerId.createFromB58String(address);
+			const { stream, protocol } = await this.node.dialProtocol(address, "/chat/1.0.0");
 			this.ChatManager.newConnection(ma.getPeerId(), stream, protocol);
 			console.log(`Chat connected to: ${ma.getPeerId()}`);
 		} else {
