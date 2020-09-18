@@ -9,12 +9,16 @@ const multiaddr = require("multiaddr");
 const MulticastDNS = require("libp2p-mdns");
 const Bootstrap = require("libp2p-bootstrap");
 const PeerId = require("peer-id");
+const WStar = require("libp2p-webrtc-star");
+const wrtc = require("wrtc");
 
 // Known peers addresses
 const bootstrapMultiaddrs = [
 	"/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd",
 	"/dns4/lon-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLMeWqB7YGVLJN3pNLQpmmEk35v6wYtsMGLzSr5QBU3",
 ];
+
+const transportKey = WStar.prototype[Symbol.toStringTag];
 
 export default {
 	node: null,
@@ -29,10 +33,14 @@ export default {
 			},
 			addresses: {
 				// add a listen address (localhost) to accept TCP connections on a random port
-				listen: ["/ip4/0.0.0.0/tcp/0"],
+				listen: [
+					"/ip4/0.0.0.0/tcp/0",
+					"/dns4/wrtc-star1.par.dwebops.pub/tcp/443/wss/p2p-webrtc-star",
+					"/dns4/wrtc-star2.sjc.dwebops.pub/tcp/443/wss/p2p-webrtc-star",
+				],
 			},
 			modules: {
-				transport: [TCP, WebSockets],
+				transport: [TCP, WebSockets, WStar],
 				connEncryption: [SECIO],
 				streamMuxer: [MPLEX],
 				peerDiscovery: [MulticastDNS, Bootstrap],
@@ -61,6 +69,11 @@ export default {
 					[Bootstrap.tag]: {
 						enabled: true,
 						list: bootstrapMultiaddrs, // provide array of multiaddrs
+					},
+				},
+				transport: {
+					[transportKey]: {
+						wrtc,
 					},
 				},
 			},
