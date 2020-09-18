@@ -5,7 +5,12 @@ const uint8ArrayToString = require("uint8arrays/to-string");
 
 var textDecoder = new TextDecoder("utf-8");
 
-function pushableStream(stream) {
+export const MSG_TYPE = {
+	SETTINGS: 0,
+	MESSAGE: 1,
+};
+
+export function pushableStream(stream) {
 	// Read utf-8 from stdin
 	const source = pushable();
 	pipe(
@@ -16,14 +21,16 @@ function pushableStream(stream) {
 	return source;
 }
 
-function readStream(stream, cm, args) {
+export function readStream(stream, cm, args) {
 	pipe(
 		stream.source,
 		// Decode length-prefixed data
 		//lp.decode(),
 		async function (source) {
 			for await (const msg of source) {
-				cm.newMessage(msg.toString(), args);
+				let type = msg.slice(0, 1);
+				if (type == MSG_TYPE.Message) cm.newMessage(msg.toString(), args);
+				else console.error("NOT IMPLEEMENTED YET"); //TODO Settings
 			}
 		}
 	);

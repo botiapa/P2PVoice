@@ -11,6 +11,9 @@
 	let messages = [];
 	cm.onMessagesChanged = function (msgs) {
 		messages = msgs;
+		for (let msg in msgs) {
+			if (msg.peerId == peerId) messages.push(msg);
+		}
 	};
 	async function sendMessage() {
 		let _message = message;
