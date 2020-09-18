@@ -1,28 +1,26 @@
 <script>
 	export let p2p;
+	export let cm;
 	export let onChangeChat = (peer) => {};
+
 	let address;
+	let connections = {};
 
 	const Store = require("electron-store");
 	const store = new Store();
 
-	let peers = {};
+	cm.onConnectionsChanged = function (_connections) {
+		connections = _connections;
+	};
 	p2p.onReady = () => {
 		p2p.node.peerStore.on("peer", (peerId) => {
 			console.log(`New Peer: ${peerId}`);
-			peers[peerId] = { peerId: peerId };
 		});
-		p2p.node.peerStore.on("change:multiaddrs", ({ peerId, mas }) => {
-			console.log(`Multiaddress change for peer: ${peerId} with the following adresses: ${mas}`);
-			if (!peers[peerId]) peers[peerId] = { peerId: peerId };
-			peers[peerId].mas = mas;
-			peers = peers;
+		p2p.node.peerStore.on("change:multiaddrs", ({ peerId, multiaddrs }) => {
+			console.log(`Multiaddress change for peer: ${peerId} with the following adresses: ${multiaddrs}`);
 		});
 		p2p.node.peerStore.on("change:protocols", ({ peerId, protocols }) => {
 			console.log(`Protocol change for peer: ${peerId} with the following protocols: ${protocols}`);
-			if (!peers[peerId]) peers[peerId] = { peerId: peerId };
-			peers[peerId].protocols = protocols;
-			peers = peers;
 		});
 	};
 	async function addAddress() {
@@ -60,8 +58,8 @@
 	<hr />
 	<p>Peers</p>
 	<div>
-		{#each Object.entries(peers) as [peerId, peer]}
-			<div class="peer" on:click={onChangeChat(peer)}>{peerId.substr(peerId.length - 10).toUpperCase()}</div>
+		{#each Object.entries(connections) as [peerId, c]}
+			<div class="peer" on:click={onChangeChat(peerId)}>{peerId.substr(peerId.length - 10).toUpperCase()}</div>
 		{/each}
 	</div>
 </main>

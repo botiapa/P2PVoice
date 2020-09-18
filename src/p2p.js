@@ -109,8 +109,8 @@ export default {
 		if (this.node) {
 			let peerId = await PeerId.createFromB58String(address);
 			const { stream, protocol } = await this.node.dialProtocol(peerId, "/chat/1.0.0");
-			this.ChatManager.newConnection(ma.getPeerId(), stream, protocol);
-			console.log(`Chat connected to: ${ma.getPeerId()}`);
+			this.ChatManager.newConnection(peerId, stream, protocol);
+			console.log(`Chat connected to: ${peerId}`);
 		} else {
 			console.error("Tried to connect to a peer, but node is null");
 		}

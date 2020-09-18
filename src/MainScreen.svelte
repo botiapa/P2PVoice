@@ -6,7 +6,7 @@
 	export let p2p;
 	export let cm;
 	let address;
-	let chatPeer;
+	let chatPeerId;
 
 	const Store = require("electron-store");
 	const store = new Store();
@@ -16,8 +16,8 @@
 		await p2p.connect(address);
 	}
 
-	function onChangeChat(peer) {
-		chatPeer = peer;
+	function onChangeChat(peerId) {
+		chatPeerId = peerId;
 	}
 </script>
 
@@ -60,9 +60,9 @@
 
 <main>
 	<div id="container">
-		<SideBar {p2p} {onChangeChat} />
-		{#if chatPeer}
-			<Chat peer={chatPeer} {cm} />
+		<SideBar {p2p} {cm} {onChangeChat} />
+		{#if chatPeerId}
+			<Chat peerId={chatPeerId} {cm} />
 		{:else}
 			<EmptyChat />
 		{/if}

@@ -1,5 +1,5 @@
 <script>
-	export let peer;
+	export let peerId;
 	export let cm;
 	let message;
 
@@ -12,11 +12,10 @@
 	cm.onMessagesChanged = function (msgs) {
 		messages = msgs;
 	};
-
 	async function sendMessage() {
 		let _message = message;
 		message = ""; // Reset textbox
-		await cm.sendMessage(peer, _message);
+		await cm.sendMessage(peerId, _message);
 	}
 </script>
 
@@ -103,7 +102,7 @@
 
 <main>
 	<div id="topbar">
-		<h2>{peer.peerId}</h2>
+		<h2>{peerId}</h2>
 	</div>
 	<div id="chat">
 		{#each messages as msg}
@@ -115,7 +114,7 @@
 	</div>
 	<div id="bottombar">
 		<form on:submit|preventDefault={sendMessage}>
-			<input id="msgbox" placeholder="Send message to {peer.peerId}" bind:value={message} /><input type="submit" style="visibility: hidden;" />
+			<input id="msgbox" placeholder="Send message to {peerId}" bind:value={message} /><input type="submit" style="visibility: hidden;" />
 		</form>
 	</div>
 </main>
