@@ -1,14 +1,12 @@
-<script>
-	const Store = require("electron-store");
+<script lang="ts">
+	import type ChatManager from "../js/ChatManager";
 
-	export let p2p;
-	export let cm;
-	export let onChangeChat = (peer) => {};
+	export let p2p: any;
+	export let cm: ChatManager;
+	export let onChangeChat: (peer) => void;
 
-	let address;
+	let address: string;
 	let connections = {};
-
-	const store = new Store();
 
 	cm.onConnectionsChanged = function (_connections) {
 		connections = _connections;
@@ -88,8 +86,8 @@
 			<div class="no-peers">Peers will appear here</div>
 		{/if}
 		<div>
-			{#each Object.entries(connections) as [peerId, c]}
-				<div class="peer" on:click={onChangeChat(peerId)}>{peerId.substr(peerId.length - 10).toUpperCase()}</div>
+			{#each Object.entries(connections) as [peerId]}
+				<div class="peer" on:click={() => onChangeChat(peerId)}>{peerId.substr(peerId.length - 10).toUpperCase()}</div>
 			{/each}
 		</div>
 	</div>

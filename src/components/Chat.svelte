@@ -1,19 +1,23 @@
-<script>
+<script lang="ts">
+	import type ChatManager from "../js/ChatManager";
+
 	const Store = require("electron-store");
 	import P2P from "../js/p2p";
 
 	export let peerId;
-	export let cm;
+	export let cm: ChatManager;
 	let message;
 
 	const store = new Store();
 
-	let messages = [];
-	cm.onMessagesChanged = function (msgs) {
-		messages = msgs;
-		for (let msg in msgs) {
-			if (msg.peerId == peerId) messages.push(msg);
+	let displayedMessages = [];
+	cm.onMessagesChanged = function (newMessages) {
+		displayedMessages = []; //TODO: This is not ideal, there should be a different event for when data changes , and when new messages get added
+		for (let uuid in newMessages) {
+			let msg = newMessages[uuid];
+			if (msg.own) displayedMessages.push(msg);
 		}
+		displayedMessages = displayedMessages;
 	};
 	async function sendMessage() {
 		let _message = message;
@@ -108,10 +112,10 @@
 		<h2>{peerId}</h2>
 	</div>
 	<div id="chat">
-		{#each messages as msg}
+		{#each displayedMessages as msg}
 			<div class="message">
-				<div class="name">{msg.name}</div>
-				<div class="message-body {!msg.unsent || 'unsent'}">{msg.body}</div>
+				<div class="name">{msg.displayNamenamename}</div>
+				<div class="message-body {!msg.unsent || 'unsent'}">{msg.msgBody}</div>
 			</div>
 		{/each}
 	</div>

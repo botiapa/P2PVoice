@@ -7,13 +7,13 @@
 
 	const store = new Store();
 
-	let p2p;
+	let p2p: any;
 	async function main() {
 		p2p = P2P;
 		await p2p.init();
 	}
 	main();
-	let cm = ChatManager(p2p);
+	let cm = new ChatManager(p2p);
 	p2p.ChatManager = cm;
 </script>
 

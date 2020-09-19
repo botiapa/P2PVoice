@@ -1,11 +1,11 @@
-<script>
+<script lang="ts">
 	const Store = require("electron-store");
 
 	const store = new Store();
 
 	let name;
 	async function submit() {
-		await store.set("name", name);
+		store.set("name", name);
 	}
 </script>
 

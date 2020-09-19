@@ -1,20 +1,16 @@
-<script>
+<script lang="ts">
 	import SideBar from "./SideBar.svelte";
 	import Chat from "./Chat.svelte";
 	import EmptyChat from "./EmptyChat.svelte";
+	import type ChatManager from "../js/ChatManager";
 	const Store = require("electron-store");
 
-	export let p2p;
-	export let cm;
-	let address;
-	let chatPeerId;
+	export let p2p: any;
+	export let cm: ChatManager;
+	let address: string;
+	let chatPeerId: string;
 
 	const store = new Store();
-
-	let name;
-	async function submit() {
-		await p2p.connect(address);
-	}
 
 	function onChangeChat(peerId) {
 		chatPeerId = peerId;
