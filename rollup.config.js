@@ -4,6 +4,9 @@ import commonjs from "@rollup/plugin-commonjs";
 import livereload from "rollup-plugin-livereload";
 import { terser } from "rollup-plugin-terser";
 import nodePolyfills from "rollup-plugin-node-polyfills";
+import autoPreprocess from "svelte-preprocess";
+import typescript from "@rollup/plugin-typescript";
+import json from "@rollup/plugin-json";
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -29,7 +32,7 @@ function serve() {
 }
 
 export default {
-	input: "src/js/main.js",
+	input: "src/js/main.ts",
 	output: {
 		sourcemap: true,
 		format: "iife",
@@ -46,13 +49,13 @@ export default {
 			css: (css) => {
 				css.write("bundle.css");
 			},
+			preprocess: autoPreprocess(),
+		}),
+		typescript({ sourceMap: !production }),
+		json({
+			compact: true,
 		}),
 
-		// If you have external dependencies installed from
-		// npm, you'll most likely need these plugins. In
-		// some cases you'll need additional configuration -
-		// consult the documentation for details:
-		// https://github.com/rollup/plugins/tree/master/packages/commonjs
 		resolve({
 			browser: true,
 			dedupe: ["svelte"],
