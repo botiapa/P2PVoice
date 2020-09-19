@@ -20,6 +20,11 @@ const bootstrapMultiaddrs = [
 
 const transportKey = WStar.prototype[Symbol.toStringTag];
 
+enum Protocols {
+	text = "p2pvoice-text",
+	audio = "p2pvoice-audio",
+}
+
 export default {
 	node: null,
 	onReady: () => {},
@@ -101,14 +106,14 @@ export default {
 		this.onReady();
 	},
 	_setupHandlers: async function () {
-		await this.node.handle("/chat/1.0.0", async ({ connection, stream, protocol }) => {
+		await this.node.handle(Protocols.text, async ({ connection, stream, protocol }) => {
 			await this.ChatManager.newConnection(connection.remotePeer._idB58String, stream, protocol);
 		});
 	},
 	connect: async function (address) {
 		if (this.node) {
 			let peerId = await PeerId.createFromB58String(address);
-			const { stream, protocol } = await this.node.dialProtocol(peerId, "/chat/1.0.0");
+			const { stream, protocol } = await this.node.dialProtocol(peerId, Protocols.text);
 			this.ChatManager.newConnection(peerId, stream, protocol);
 			console.log(`Chat connected to: ${peerId}`);
 		} else {

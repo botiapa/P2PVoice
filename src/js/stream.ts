@@ -5,10 +5,10 @@ const uint8ArrayToString = require("uint8arrays/to-string");
 
 var textDecoder = new TextDecoder("utf-8");
 
-export const MSG_TYPE = {
-	SETTINGS: 0,
-	MESSAGE: 1,
-};
+export enum MSG_TYPE {
+	SETTINGS = 0,
+	MESSAGE = 1,
+}
 
 export function pushableStream(stream) {
 	// Read utf-8 from stdin

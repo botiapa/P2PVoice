@@ -25,6 +25,7 @@
 	},
 	"dependencies": {
 		"@rollup/plugin-json": "^4.1.0",
+		"@types/node": "^14.11.1",
 		"datastore-level": "^2.0.0",
 		"electron": "^10.1.2",
 		"electron-log": "^4.2.4",
