@@ -26,7 +26,7 @@ export class StreamHandler {
 	constructor(duplexStream: any, peerId: string) {
 		this.peerId = peerId;
 		this.originalStream = duplexStream;
-		this.pushStream = this.pushStream();
+		this.pushStream = this.pushableStream();
 		this.readStream();
 	}
 	private readStream() {
