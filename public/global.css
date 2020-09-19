@@ -1,8 +1,12 @@
+:root {
+	--main-bg-color: #262626;
+	--secondary-bg-color: #3c3c3c;
+	--main-fg-color: white;
+	--secondary-fg-color: #7e7e7e;
+}
+
 html,
 body {
-	/*position: relative;
-	width: 100%;
-	height: 100%;*/
 	display: flex;
 	justify-content: center;
 	align-items: stretch;
@@ -11,8 +15,8 @@ body {
 }
 
 body {
-	color: #333;
-	background-color: #262626;
+	color: var(--main-fg-color);
+	background-color: var(--main-bg-color);
 	margin: 0;
 	box-sizing: border-box;
 	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue",
