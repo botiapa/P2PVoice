@@ -1,5 +1,5 @@
 {
-	"name": "svelte-app",
+	"name": "p2pvoice",
 	"version": "1.0.0",
 	"scripts": {
 		"build": "rollup -c",
@@ -46,9 +46,8 @@
 		"libp2p-tcp": "^0.15.1",
 		"libp2p-webrtc-star": "^0.20.1",
 		"libp2p-websockets": "^0.14.0",
-		"sirv-cli": "^1.0.0",
+		"nanoid": "^3.1.12",
 		"text-encoding": "^0.7.0",
-		"uuid": "^8.3.0",
 		"wrtc": "^0.4.6"
 	}
 }

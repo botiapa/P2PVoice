@@ -12,6 +12,8 @@ const PeerId = require("peer-id");
 const WStar = require("libp2p-webrtc-star");
 const wrtc = require("wrtc");
 
+import type BaseConnection from "./ChatManager";
+
 // Known peers addresses
 const bootstrapMultiaddrs = [
 	"/dns4/ams-1.bootstrap.libp2p.io/tcp/443/wss/p2p/QmSoLer265NRgSp2LA3dPaeykiS1J6DifTC88f5uVQKNAd",
@@ -106,15 +108,16 @@ export default {
 		this.onReady();
 	},
 	_setupHandlers: async function () {
-		await this.node.handle(Protocols.text, async ({ connection, stream, protocol }) => {
-			await this.ChatManager.newConnection(connection.remotePeer._idB58String, stream, protocol);
+		await this.node.handle(Protocols.text, async (conn: BaseConnection) => {
+			console.log(conn);
+			await this.ChatManager.newConnection(conn);
 		});
 	},
 	connect: async function (address) {
 		if (this.node) {
 			let peerId = await PeerId.createFromB58String(address);
 			const { stream, protocol } = await this.node.dialProtocol(peerId, Protocols.text);
-			this.ChatManager.newConnection(peerId, stream, protocol);
+			this.ChatManager.newConnection({ peerId, stream, protocol });
 			console.log(`Chat connected to: ${peerId}`);
 		} else {
 			console.error("Tried to connect to a peer, but node is null");
