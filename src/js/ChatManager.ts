@@ -55,7 +55,6 @@ export default class ChatManager {
 	constructor(p2p: any) {
 		p2p = p2p;
 	}
-	onMessagesChanged(messages: { [messageUUID: string]: Message }) {}
 	onConnectionsChanged(connections: { [peerId: string]: UpgradedConnection }) {}
 	sendMessage(peerId: string, msgBody: string) {
 		const { streamHandler } = this.connections[peerId];
@@ -64,10 +63,9 @@ export default class ChatManager {
 		this.messages[uuid] = msg;
 		messages.set(this.messages); // Update store, therefore the UI which binds to it
 		streamHandler.sendChatMessage(msg as NetworkedChatMessage);
-
 		msg.sent = true;
 		this.messages[uuid] = msg;
-		this.onMessagesChanged(this.messages);
+		messages.set(this.messages);
 		console.log(`Sent message: ${msgBody}`);
 		//FIXME Add UUID tp messages
 	}
@@ -83,7 +81,7 @@ export default class ChatManager {
 	newMessage(peerId: string, netMsg: NetworkedChatMessage) {
 		let msg = new Message(netMsg.messageUUID, peerId, peerId, netMsg.msgBody, false, true);
 		this.messages[netMsg.messageUUID] = msg;
-		this.onMessagesChanged(this.messages);
+		messages.set(this.messages);
 		console.log(`New message: ${msg.msgBody} with id: ${msg.messageUUID}`);
 	}
 	getUniqueMessageUUID() {

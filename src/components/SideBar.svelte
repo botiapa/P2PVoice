@@ -10,7 +10,6 @@
 
 	cm.onConnectionsChanged = (_connections) => {
 		connections = _connections;
-		console.log(_connections);
 	};
 	p2p.onReady = () => {
 		p2p.node.peerStore.on("peer", (peerId) => {
@@ -80,7 +79,7 @@
 	<div class="block" id="list">
 		<form on:submit|preventDefault={addAddress}>
 			<input type="text" bind:value={address} />
-			<input type="submit" />
+			<input type="submit" value="Connect" />
 		</form>
 		<hr />
 		{#if Object.entries(connections).length == 0}
