@@ -74,7 +74,6 @@ export default class ChatManager {
 		sh.on(MSG_TYPE.CHAT_MESSAGE, (data: NetworkedChatMessage, peerId: string) => {
 			this.newMessage(peerId, data);
 		});
-		debugger;
 		this.connections[conn.peerId] = new UpgradedConnection(conn, sh);
 		this.onConnectionsChanged(this.connections);
 	}
