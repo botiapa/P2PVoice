@@ -8,8 +8,9 @@
 	let address: string;
 	let connections = {};
 
-	cm.onConnectionsChanged = function (_connections) {
+	cm.onConnectionsChanged = (_connections) => {
 		connections = _connections;
+		console.log(_connections);
 	};
 	p2p.onReady = () => {
 		p2p.node.peerStore.on("peer", (peerId) => {
@@ -86,7 +87,7 @@
 			<div class="no-peers">Peers will appear here</div>
 		{/if}
 		<div>
-			{#each Object.entries(connections) as [peerId]}
+			{#each Object.entries(connections) as [peerId, _conn]}
 				<div class="peer" on:click={() => onChangeChat(peerId)}>{peerId.substr(peerId.length - 10).toUpperCase()}</div>
 			{/each}
 		</div>

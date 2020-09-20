@@ -55,6 +55,7 @@ export class StreamHandler {
 			async (source: any) => {
 				for await (const msg of source) {
 					let decoded = this.decodeMessage(msg);
+
 					this.handlers[decoded.type]?.forEach((handler) => {
 						handler(decoded.data, this.peerId);
 					});

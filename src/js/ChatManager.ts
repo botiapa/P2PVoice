@@ -1,9 +1,25 @@
 import { StreamHandler, MSG_TYPE } from "./stream.ts";
 import { nanoid } from "nanoid";
+import { messages } from "../js/stores";
+import { get } from "svelte/store";
+
 export interface BaseConnection {
 	peerId: string;
 	stream: any; //TODO Define the actual type
 	protocol: string;
+}
+
+export class UpgradedConnection implements BaseConnection {
+	streamHandler: StreamHandler;
+	peerId: string;
+	stream: any;
+	protocol: string;
+	constructor(baseConnection: BaseConnection, streamHandler: StreamHandler) {
+		this.streamHandler = streamHandler;
+		this.peerId = baseConnection.peerId;
+		this.stream = baseConnection.stream;
+		this.protocol = baseConnection.protocol;
+	}
 }
 
 export class NetworkedChatMessage {
@@ -32,19 +48,6 @@ export class Message {
 	}
 }
 
-export class UpgradedConnection implements BaseConnection {
-	streamHandler: StreamHandler;
-	peerId: string;
-	stream: any;
-	protocol: string;
-	constructor(baseConnection: BaseConnection, streamHandler: StreamHandler) {
-		this.streamHandler = streamHandler;
-		this.peerId = baseConnection.peerId;
-		this.stream = baseConnection.stream;
-		this.protocol = baseConnection.protocol;
-	}
-}
-
 export default class ChatManager {
 	connections: { [peerId: string]: UpgradedConnection } = {};
 	messages: { [messageUUID: string]: Message } = {};
@@ -59,7 +62,7 @@ export default class ChatManager {
 		let uuid: string = this.getUniqueMessageUUID();
 		let msg = new Message(uuid, peerId, peerId, msgBody, true, false);
 		this.messages[uuid] = msg;
-		this.onMessagesChanged(this.messages);
+		messages.set(this.messages); // Update store, therefore the UI which binds to it
 		streamHandler.sendChatMessage(msg as NetworkedChatMessage);
 
 		msg.sent = true;
@@ -73,6 +76,7 @@ export default class ChatManager {
 		sh.on(MSG_TYPE.CHAT_MESSAGE, (data: NetworkedChatMessage, peerId: string) => {
 			this.newMessage(peerId, data);
 		});
+		debugger;
 		this.connections[conn.peerId] = new UpgradedConnection(conn, sh);
 		this.onConnectionsChanged(this.connections);
 	}

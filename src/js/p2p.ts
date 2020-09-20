@@ -108,15 +108,17 @@ export default {
 		this.onReady();
 	},
 	_setupHandlers: async function () {
-		await this.node.handle(Protocols.text, async (conn: BaseConnection) => {
-			await this.ChatManager.newConnection(conn);
+		await this.node.handle(Protocols.text, async ({ connection, stream, protocol }) => {
+			let peerId = connection.remotePeer.toB58String();
+			await this.ChatManager.newConnection({ peerId, stream, protocol });
 		});
 	},
 	connect: async function (address) {
 		if (this.node) {
 			let peerId = await PeerId.createFromB58String(address);
+			let B85 = peerId.toB58String();
 			const { stream, protocol } = await this.node.dialProtocol(peerId, Protocols.text);
-			this.ChatManager.newConnection({ peerId, stream, protocol });
+			this.ChatManager.newConnection({ peerId: B85, stream, protocol });
 			console.log(`Chat connected to: ${peerId}`);
 		} else {
 			console.error("Tried to connect to a peer, but node is null");

@@ -1,24 +1,27 @@
 <script lang="ts">
 	import type ChatManager from "../js/ChatManager";
-
-	const Store = require("electron-store");
-	import P2P from "../js/p2p";
+	import type { Message } from "../js/ChatManager";
+	import { messages } from "../js/stores";
 
 	export let peerId;
 	export let cm: ChatManager;
 	let message;
-
-	const store = new Store();
-
 	let displayedMessages = [];
-	cm.onMessagesChanged = function (newMessages) {
+	$: {
+		displayedMessages = refreshMessages($messages);
+	}
+
+	function refreshMessages(newMessages: { [messageUUID: string]: Message }) {
+		console.log(newMessages);
 		displayedMessages = []; //TODO: This is not ideal, there should be a different event for when data changes , and when new messages get added
 		for (let uuid in newMessages) {
 			let msg = newMessages[uuid];
-			if (msg.own) displayedMessages.push(msg);
+			console.log(msg);
+			if (peerId == msg.peerId) displayedMessages.push(msg);
 		}
-		displayedMessages = displayedMessages;
-	};
+		console.log(displayedMessages);
+		return displayedMessages;
+	}
 	async function sendMessage() {
 		let _message = message;
 		message = ""; // Reset textbox
@@ -114,7 +117,7 @@
 	<div id="chat">
 		{#each displayedMessages as msg}
 			<div class="message">
-				<div class="name">{msg.displayNamenamename}</div>
+				<div class="name">{msg.displayName}</div>
 				<div class="message-body {!msg.unsent || 'unsent'}">{msg.msgBody}</div>
 			</div>
 		{/each}
