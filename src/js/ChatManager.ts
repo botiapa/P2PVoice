@@ -60,7 +60,7 @@ export default class ChatManager {
 		let msg = new Message(uuid, peerId, peerId, msgBody, true, false);
 		this.messages[uuid] = msg;
 		this.onMessagesChanged(this.messages);
-		streamHandler.sendChatMessage(msg);
+		streamHandler.sendChatMessage(msg as NetworkedChatMessage);
 
 		msg.sent = true;
 		this.messages[uuid] = msg;
@@ -70,7 +70,9 @@ export default class ChatManager {
 	}
 	async newConnection(conn: BaseConnection) {
 		let sh = new StreamHandler(conn.stream, conn.peerId);
-		sh.onChatMessageReceived = this.newMessage;
+		sh.on(MSG_TYPE.CHAT_MESSAGE, (data: NetworkedChatMessage, peerId: string) => {
+			this.newMessage(peerId, data);
+		});
 		this.connections[conn.peerId] = new UpgradedConnection(conn, sh);
 		this.onConnectionsChanged(this.connections);
 	}

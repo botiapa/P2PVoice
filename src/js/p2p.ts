@@ -109,7 +109,6 @@ export default {
 	},
 	_setupHandlers: async function () {
 		await this.node.handle(Protocols.text, async (conn: BaseConnection) => {
-			console.log(conn);
 			await this.ChatManager.newConnection(conn);
 		});
 	},

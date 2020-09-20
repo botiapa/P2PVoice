@@ -1,4 +1,5 @@
-import type { NetworkedChatMessage, Message } from "./ChatManager.ts";
+import type { NetworkedChatMessage, Message } from "./ChatManager";
+import ChatManager from "./ChatManager";
 import pipe from "it-pipe";
 const pushable = require("it-pushable");
 const lp = require("it-length-prefixed");
@@ -17,11 +18,14 @@ interface NetworkMessage {
 	data: any;
 }
 
+/**
+ * Represent a class which handles a duplex connection with a peer.
+ */
 export class StreamHandler {
 	private originalStream: any;
 	private pushStream: any;
 	private peerId: string;
-	onChatMessageReceived(peerId: string, message: NetworkedChatMessage) {}
+	private handlers: { [msgType: number]: ((data: any, peerId: string) => void)[] } = {}; // List of handler functions
 
 	constructor(duplexStream: any, peerId: string) {
 		this.peerId = peerId;
@@ -29,6 +33,20 @@ export class StreamHandler {
 		this.pushStream = this.pushableStream();
 		this.readStream();
 	}
+	sendMessage(type: MSG_TYPE, data: any) {
+		let encoded = this.encodeMessage({ type, data });
+		this.pushStream.push(encoded);
+	}
+	sendChatMessage(msg: NetworkedChatMessage) {
+		let type = MSG_TYPE.CHAT_MESSAGE;
+		let encoded = this.encodeMessage({ type, data: msg });
+		this.pushStream.push(encoded);
+	}
+	on(msgType: MSG_TYPE, handler: (data: any, peerId: string) => void) {
+		this.handlers[msgType] = this.handlers[msgType] ?? []; // Create list for msg_type if null
+		this.handlers[msgType].push(handler);
+	}
+	//TODO: Implement 'off' function if necessary
 	private readStream() {
 		pipe(
 			this.originalStream.source,
@@ -37,8 +55,9 @@ export class StreamHandler {
 			async (source: any) => {
 				for await (const msg of source) {
 					let decoded = this.decodeMessage(msg);
-					if (decoded.type == MSG_TYPE.CHAT_MESSAGE) this.onChatMessageReceived(this.peerId, decoded.data);
-					else console.error("NOT IMPLEEMENTED YET"); //TODO Settings
+					this.handlers[decoded.type]?.forEach((handler) => {
+						handler(decoded.data, this.peerId);
+					});
 				}
 			}
 		);
@@ -60,18 +79,8 @@ export class StreamHandler {
 	}
 
 	private decodeMessage(msg: any): NetworkMessage {
-		let decoded = textDecoder.decode(msg);
+		let decoded = msg.toString();
 		let obj = JSON.parse(decoded);
 		return obj;
-	}
-
-	sendMessage(type: MSG_TYPE, data: any) {
-		let encoded = this.encodeMessage({ type, data });
-		this.pushStream.push(encoded);
-	}
-	sendChatMessage(msg: NetworkedChatMessage) {
-		let type = MSG_TYPE.CHAT_MESSAGE;
-		let encoded = this.encodeMessage({ type, data: msg });
-		this.pushStream.push(encoded);
 	}
 }
