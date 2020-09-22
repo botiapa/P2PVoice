@@ -77,8 +77,8 @@
 	<div class="block" id="stats">
 		<div>Discovered peers: {$peers.size}</div>
 		<div>Connected peers: {$connections.size}</div>
-		<div>Received data: {prettyBytes(Number($metricStats?.dataReceived))}</div>
-		<div>Sent data: {prettyBytes(Number($metricStats?.dataSent))}</div>
+		<div>Received data: {if($metricStats)prettyBytes(Number($metricStats?.dataReceived))}</div>
+		<div>Sent data: {if($metricStats)prettyBytes(Number($metricStats?.dataSent))}</div>
 	</div>
 	<div class="block" id="list">
 		<form on:submit|preventDefault={addAddress}>

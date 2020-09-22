@@ -8,6 +8,7 @@
 	let message;
 	let displayedMessages = [];
 	$: {
+		peerId;
 		displayedMessages = refreshMessages($messages);
 	}
 

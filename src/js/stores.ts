@@ -52,7 +52,6 @@ export let metricStats: customWritable<object>;
 
 async function init() {
 	let json = ipcRenderer.sendSync("load-stores");
-	console.log(json);
 	bigStore = JSON.parse(json);
 	console.log("Loaded stores.json:");
 	console.log(bigStore);
@@ -63,8 +62,8 @@ function createStores() {
 	messages = new customWritable<{ [messageUUID: string]: Message }>("messages", {});
 	name = new customWritable<string>("name");
 
-	connections = new customWritable<Map<any, any>>("connections");
-	peers = new customWritable("peers", 0, false);
-	metricStats = new customWritable("metricStats", {}, false);
+	connections = new customWritable<Map<any, any>>("connections", {}, false);
+	peers = new customWritable("peers", {}, false);
+	metricStats = new customWritable("metricStats", null, false);
 }
 init();
