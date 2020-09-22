@@ -52,13 +52,20 @@ export default class ChatManager {
 	messages: { [messageUUID: string]: Message } = {};
 	p2p: any;
 	constructor(p2p: any) {
-		p2p = p2p;
+		this.p2p = p2p;
 	}
 	onConnectionsChanged(connections: { [peerId: string]: UpgradedConnection }) {}
 	sendMessage(peerId: string, msgBody: string) {
 		const { streamHandler } = this.connections[peerId];
 		let uuid: string = this.getUniqueMessageUUID();
-		let msg = new Message(uuid, this.p2p.options.peerId, this.p2p.options.peerId, msgBody, true, false); //FIXME It should pass in their own peerId and not the receiver's
+		let msg = new Message(
+			uuid,
+			this.p2p.node.peerId.toB58String(),
+			this.p2p.node.peerId.toB58String(),
+			msgBody,
+			true,
+			false
+		); //FIXME It should pass in their own peerId and not the receiver's
 		this.messages[uuid] = msg;
 		messages.set(this.messages); // Update store, therefore the UI which binds to it
 		streamHandler.sendChatMessage(msg as NetworkedChatMessage);

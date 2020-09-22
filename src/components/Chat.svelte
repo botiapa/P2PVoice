@@ -13,14 +13,11 @@
 	}
 
 	function refreshMessages(newMessages: { [messageUUID: string]: Message }) {
-		console.log(newMessages);
 		displayedMessages = []; //TODO: This is not ideal, there should be a different event for when data changes , and when new messages get added
 		for (let uuid in newMessages) {
 			let msg = newMessages[uuid];
-			console.log(msg);
-			if (peerId == msg.peerId) displayedMessages.push(msg);
+			if (peerId == msg.peerId || msg.own) displayedMessages.push(msg);
 		}
-		console.log(displayedMessages);
 		return displayedMessages;
 	}
 	async function sendMessage() {
