@@ -74,6 +74,7 @@ export default {
 		// instead of npm run dev), minify
 		production && terser(),
 	],
+	external: ["fs"],
 	watch: {
 		clearScreen: false,
 	},

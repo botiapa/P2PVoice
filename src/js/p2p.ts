@@ -11,6 +11,7 @@ const Bootstrap = require("libp2p-bootstrap");
 const PeerId = require("peer-id");
 const WStar = require("libp2p-webrtc-star");
 const wrtc = require("wrtc");
+import { peers, connections, metricStats } from "../js/stores";
 
 import type BaseConnection from "./ChatManager";
 
@@ -54,7 +55,19 @@ export default {
 				peerRouting: [KadDHT],
 				dht: KadDHT,
 			},
-			//datastore: new LevelStore("%APPDATA%\\Electron"),
+			metrics: {
+				enabled: true,
+				computeThrottleMaxQueueSize: 1000,
+				computeThrottleTimeout: 2000,
+				movingAverageIntervals: [
+					30 * 1000, // 30 second
+					2 * 60 * 1000, // 2 minutes
+					10 * 60 * 1000, // 10 minutes
+				],
+				maxOldPeersRetention: 50,
+			},
+			//TODO
+			//datastore: new LevelStore("./peers/"),
 			peerStore: {
 				persistence: true,
 				threshold: 5,
@@ -89,16 +102,23 @@ export default {
 		this.node.on("error", (err) => {
 			console.log(err);
 		});
-		this.node.connectionManager.on("peer:connect", (connection) => {
+		this.node.connectionManager.on("peer:connect", (connection: any) => {
+			connections.set(this.node.connectionManager.connections);
 			console.log("connected to: ", connection.remotePeer.toB58String());
 		});
-		this.node.connectionManager.on("peer:disconnected", (connection) => {
+		this.node.connectionManager.on("peer:disconnect", (connection: any) => {
+			connections.set(this.node.connectionManager.connections);
 			console.log("disconnected from: ", connection.remotePeer.toB58String());
+		});
+		this.node.peerStore.on("peer", (peerId) => {
+			peers.set(this.node.peerStore.addressBook.data);
 		});
 		this.node.on("peer:discovery", async (peer) => {
 			console.log("discovered peer: ", peer);
 		});
-
+		window.setInterval(() => {
+			metricStats.set(this.node.metrics.global.snapshot);
+		}, 1000);
 		await this.node.start();
 		console.log("libp2p has started");
 		console.log("listening on addresses:");

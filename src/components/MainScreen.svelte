@@ -3,14 +3,11 @@
 	import Chat from "./Chat.svelte";
 	import EmptyChat from "./EmptyChat.svelte";
 	import type ChatManager from "../js/ChatManager";
-	const Store = require("electron-store");
 
 	export let p2p: any;
 	export let cm: ChatManager;
 	let address: string;
 	let chatPeerId: string;
-
-	const store = new Store();
 
 	function onChangeChat(peerId) {
 		chatPeerId = peerId;

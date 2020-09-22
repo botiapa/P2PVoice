@@ -1,5 +1,6 @@
 {
 	"name": "p2pvoice",
+	"productName": "P2PVoice",
 	"version": "1.0.0",
 	"scripts": {
 		"build": "rollup -c",
@@ -12,6 +13,7 @@
 		"@rollup/plugin-node-resolve": "^8.0.0",
 		"@rollup/plugin-typescript": "^6.0.0",
 		"@tsconfig/svelte": "^1.0.10",
+		"@types/datastore-level": "^1.1.1",
 		"@types/node": "^14.11.1",
 		"install": "^0.13.0",
 		"npm": "^6.14.8",
@@ -32,7 +34,6 @@
 		"electron": "^10.1.2",
 		"electron-log": "^4.2.4",
 		"electron-reload": "^1.5.0",
-		"electron-store": "^6.0.0",
 		"electron-unhandled": "^3.0.2",
 		"it-length-prefixed": "^3.1.0",
 		"it-pipe": "^1.1.0",
@@ -47,6 +48,7 @@
 		"libp2p-webrtc-star": "^0.20.1",
 		"libp2p-websockets": "^0.14.0",
 		"nanoid": "^3.1.12",
+		"pretty-bytes": "^5.4.1",
 		"text-encoding": "^0.7.0",
 		"wrtc": "^0.4.6"
 	}

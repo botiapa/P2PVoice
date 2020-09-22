@@ -1,7 +1,6 @@
 import { StreamHandler, MSG_TYPE } from "./stream.ts";
 import { nanoid } from "nanoid";
 import { messages } from "../js/stores";
-import { get } from "svelte/store";
 
 export interface BaseConnection {
 	peerId: string;
@@ -59,7 +58,7 @@ export default class ChatManager {
 	sendMessage(peerId: string, msgBody: string) {
 		const { streamHandler } = this.connections[peerId];
 		let uuid: string = this.getUniqueMessageUUID();
-		let msg = new Message(uuid, peerId, peerId, msgBody, true, false);
+		let msg = new Message(uuid, peerId, peerId, msgBody, true, false); //FIXME It should pass in their own peerId and not the receiver's
 		this.messages[uuid] = msg;
 		messages.set(this.messages); // Update store, therefore the UI which binds to it
 		streamHandler.sendChatMessage(msg as NetworkedChatMessage);

@@ -1,15 +1,17 @@
 <script lang="ts">
 	import type ChatManager from "../js/ChatManager";
+	import { connections, metricStats, peers } from "../js/stores";
+	import prettyBytes from "pretty-bytes";
 
 	export let p2p: any;
 	export let cm: ChatManager;
 	export let onChangeChat: (peer) => void;
 
 	let address: string;
-	let connections = {};
+	let chatConnections = {};
 
 	cm.onConnectionsChanged = (_connections) => {
-		connections = _connections;
+		chatConnections = _connections;
 	};
 	p2p.onReady = () => {
 		p2p.node.peerStore.on("peer", (peerId) => {
@@ -73,8 +75,10 @@
 
 <main>
 	<div class="block" id="stats">
-		<div>Discovered peers:</div>
-		<div>Connected peers:</div>
+		<div>Discovered peers: {$peers.size}</div>
+		<div>Connected peers: {$connections.size}</div>
+		<div>Received data: {prettyBytes(Number($metricStats?.dataReceived))}</div>
+		<div>Sent data: {prettyBytes(Number($metricStats?.dataSent))}</div>
 	</div>
 	<div class="block" id="list">
 		<form on:submit|preventDefault={addAddress}>
@@ -82,11 +86,11 @@
 			<input type="submit" value="Connect" />
 		</form>
 		<hr />
-		{#if Object.entries(connections).length == 0}
+		{#if Object.entries(chatConnections).length == 0}
 			<div class="no-peers">Peers will appear here</div>
 		{/if}
 		<div>
-			{#each Object.entries(connections) as [peerId, _conn]}
+			{#each Object.entries(chatConnections) as [peerId, _conn]}
 				<div class="peer" on:click={() => onChangeChat(peerId)}>{peerId.substr(peerId.length - 10).toUpperCase()}</div>
 			{/each}
 		</div>

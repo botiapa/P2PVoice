@@ -1,11 +1,9 @@
 <script lang="ts">
 	import Welcome from "./Welcome.svelte";
 	import MainScreen from "./MainScreen.svelte";
-	const Store = require("electron-store");
 	import P2P from "../js/p2p";
 	import ChatManager from "../js/ChatManager";
-
-	const store = new Store();
+	import { name } from "../js/stores";
 
 	let p2p: any;
 	async function main() {
@@ -33,7 +31,7 @@
 </style>
 
 <main>
-	{#if !store.get('name')}
+	{#if !$name}
 		<Welcome />
 	{:else}
 		<MainScreen {p2p} {cm} />

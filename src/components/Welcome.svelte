@@ -1,12 +1,7 @@
 <script lang="ts">
-	const Store = require("electron-store");
+	import { name } from "../js/stores";
 
-	const store = new Store();
-
-	let name;
-	async function submit() {
-		store.set("name", name);
-	}
+	let inputValue;
 </script>
 
 <style>
@@ -38,9 +33,13 @@
 	<h1>Hello stranger!</h1>
 	<h3>Please choose a name to continue</h3>
 	<div>
-		<form on:submit|preventDefault={submit}>
-			<input placeholder="Enter a name" bind:value={name} />
-			<input type="submit" />
+		<form on:submit|preventDefault>
+			<input placeholder="Enter a name" bind:value={inputValue} />
+			<input
+				type="submit"
+				on:click={() => {
+					$name = inputValue;
+				}} />
 		</form>
 	</div>
 </main>
